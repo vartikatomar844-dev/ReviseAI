@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReviseAI — Turn lecture material into exam-ready revision notes</title>
+  <meta name="description" content="Upload your lecture PDF and instantly generate structured, exam-oriented revision notes powered by AI.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar no-print">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+            <path d="M6 6h10"/>
+            <path d="M6 10h10"/>
+            <path d="M6 14h6"/>
+          </svg>
+        </div>
+        <span class="brand-name">Revise<span class="gradient-text">AI</span></span>
+        <span class="hackathon-badge">PromptWars 2026</span>
+      </div>
+      <div class="nav-status">
+        <span id="api-status-pill" class="status-pill checking">
+          <span class="status-dot"></span>
+          <span id="api-status-text">Checking System...</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    
+    <!-- Hero Header (Visible on landing) -->
+    <section class="hero-section no-print" id="hero-section">
+      <div class="hero-badge">Lecture PDF &rarr; Revision Notes</div>
+      <h1 class="hero-title">Your lecture PDF. <br><span class="gradient-text">Your revision, ready.</span></h1>
+      <p class="hero-subtext">Upload your lecture material and turn it into clear, exam-ready revision notes in seconds.</p>
+    </section>
+
+    <!-- Upload & Processing Section -->
+    <section class="upload-container no-print" id="upload-section">
+      
+      <!-- Drag & Drop Zone -->
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="pdf-file-input" accept=".pdf,application/pdf" hidden>
+        
+        <div class="dropzone-content" id="dropzone-prompt">
+          <div class="upload-icon-wrapper">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <h3 class="dropzone-title">Drop your lecture PDF here</h3>
+          <p class="dropzone-hint">or click to browse files (PDF only, up to 15 MB)</p>
+          <button type="button" class="btn btn-secondary" id="browse-btn">
+            Upload Lecture PDF
+          </button>
+        </div>
+
+        <!-- File Selected Card (Hidden initially) -->
+        <div class="selected-file-card hidden" id="selected-file-card">
+          <div class="file-icon-box">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <text x="7" y="18" font-size="6" font-weight="bold" fill="currentColor" stroke="none">PDF</text>
+            </svg>
+          </div>
+          <div class="file-details">
+            <div class="file-name" id="file-name-display">Lecture_Material.pdf</div>
+            <div class="file-meta">
+              <span class="file-badge">PDF</span>
+              <span id="file-size-display">2.4 MB</span>
+            </div>
+          </div>
+          <button type="button" class="btn-icon remove-btn" id="remove-file-btn" title="Remove PDF">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Action Button Container -->
+      <div class="action-bar flex-center">
+        <button type="button" class="btn btn-primary btn-large" id="process-btn" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <span id="process-btn-text">Generate Revision Notes</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- Error Alert Box -->
+    <div class="alert-box error hidden no-print" id="error-alert">
+      <div class="alert-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div class="alert-content">
+        <h4 class="alert-title">Processing Issue</h4>
+        <p class="alert-message" id="error-message">Error message text here.</p>
+      </div>
+      <button type="button" class="alert-close" id="close-alert-btn">&times;</button>
+    </div>
+
+    <!-- Processing / Loading Overlay State -->
+    <section class="loading-state hidden no-print" id="loading-state">
+      <div class="spinner-container">
+        <div class="pulse-ring"></div>
+        <div class="spinner-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+      </div>
+      <h3 class="loading-title" id="loading-step-title">Analyzing Lecture PDF...</h3>
+      <p class="loading-subtitle" id="loading-step-desc">Extracting text content and organizing concepts into exam-ready notes.</p>
+    </section>
+
+    <!-- Generated Revision Notes View Container -->
+    <section class="notes-container hidden" id="notes-section">
+      
+      <!-- Notes Toolbar (Print / Copy / Reset) -->
+      <div class="notes-toolbar no-print">
+        <div class="toolbar-left">
+          <button type="button" class="btn btn-secondary btn-sm" id="reset-btn">
+            &larr; Process Another PDF
+          </button>
+        </div>
+        <div class="toolbar-right flex-gap">
+          <button type="button" class="btn btn-secondary btn-sm" id="copy-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span id="copy-btn-text">Copy Notes</span>
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" id="print-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            Print / Save as PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Revision Notes Document Card -->
+      <article class="revision-document" id="revision-document">
+        
+        <!-- Document Header -->
+        <header class="doc-header">
+          <div class="doc-badge-row">
+            <span class="doc-badge">Exam Revision Notes</span>
+            <span class="doc-source-meta" id="doc-source-meta">From: Lecture.pdf (12 pages)</span>
+          </div>
+          <h1 class="doc-title" id="doc-title">Lecture Topic Title</h1>
+          <div class="doc-overview-bar" id="doc-overview-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </header>
+
+        <!-- Quick Section Navigation Chips -->
+        <nav class="doc-nav-chips no-print" id="doc-nav-chips">
+          <!-- Dynamically populated chips -->
+        </nav>
+
+        <!-- Main Notes Content Sections -->
+        <div class="doc-body" id="doc-body">
+          <!-- Dynamically generated sections A-G -->
+        </div>
+
+      </article>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer no-print">
+    <div class="footer-container">
+      <p>ReviseAI &mdash; PromptWars Community 2026: VIT Bhopal Edition</p>
+      <p class="footer-sub">Single Core Flow: Lecture PDF &rarr; Exam-Ready Revision Notes</p>
+    </div>
+  </footer>
+
+  <!-- Application Script -->
+  <script src="/js/app.js"></script>
+</body>
+</html>
