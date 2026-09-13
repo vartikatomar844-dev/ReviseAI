@@ -203,4 +203,4 @@ app.get('*', (req, res) => {
 
 // Export app for Vercel
 module.exports = app;
-});
+
