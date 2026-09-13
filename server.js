@@ -201,10 +201,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`=================================================`);
-  console.log(`  ReviseAI is running on http://localhost:${PORT}`);
-  console.log(`  PromptWars Community 2026: VIT Bhopal Edition`);
-  console.log(`=================================================`);
+// Export app for Vercel
+module.exports = app;
 });
